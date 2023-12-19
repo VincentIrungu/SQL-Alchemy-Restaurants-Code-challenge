@@ -161,6 +161,11 @@ class Review(Base):
 
 
 
+    def __repr__(self):
+        return f"Review; {self.first_name}{self.last_name}"
+
+
+
 engine = create_engine('sqlite:///restaurants.db')
 
 Session = sessionmaker(bind=engine)
@@ -187,3 +192,15 @@ def review_restaurant(name:str):
 print(review_restaurant('The Hungry Diner'))
 
 print(".....................................................................................")
+
+
+
+def reviews(self):
+        return session.query(Review).filter_by(restaurant_id=self.id).all()
+
+print(reviews(1))
+
+
+def customers(self):
+        return session.query(Customer).join(Review).filter(Review.restaurant_id == self.id).distinct().all()
+print(customers(2))
