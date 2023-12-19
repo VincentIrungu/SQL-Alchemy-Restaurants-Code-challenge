@@ -1,6 +1,6 @@
-from models import  Restaurant, session
+from models import  Restaurant, session, Customer
 
-data = [{
+"""data = [{
   "name": "The Hungry Diner",
   "price": 1.4
 }, {
@@ -29,4 +29,40 @@ for datum in data:
 
 session.add_all(restaurants)
 session.commit()
-print("Good work Vincent restaurants data seeded succesfully. Check your table")
+print("Good work Vincent restaurants data seeded succesfully. Check your table")"""
+
+data = [{
+  "first_name": "Aindrea",
+  "last_name": "Cowlin",
+  "restaurant_id": 1
+}, {
+  "first_name": "Abagail",
+  "last_name": "Crassweller",
+  "restaurant_id": 3
+}, {
+  "first_name": "Tadeo",
+  "last_name": "Simka",
+  "restaurant_id": 2
+}, {
+  "first_name": "Jerrine",
+  "last_name": "Woollin",
+  "restaurant_id": 2
+}, {
+  "first_name": "Myrilla",
+  "last_name": "Rother",
+  "restaurant_id": 1
+}, {
+  "first_name": "Osmund",
+  "last_name": "Baert",
+  "restaurant_id": 2
+}]
+
+customers = []
+
+for datum in data:
+    brst = Customer(**datum)
+    customers.append(brst)
+
+session.add_all(customers)
+session.commit()
+print("Good work Vincent customers data seeded succesfully. Check your table")
