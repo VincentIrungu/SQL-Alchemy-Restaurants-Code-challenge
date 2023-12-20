@@ -3,118 +3,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker,relationship
 
 Base=declarative_base()
-"""review = Table (
-    "customer_resturant_review",
-    Base.metadata,
-    Column('review_id', Integer(), primary_key=True),
-    Column('review_rating', Float(2)),
-    Column('restaurant_id', ForeignKey('restaurants.id')),
-    Column('customer_id', ForeignKey('customers.id')),
-    extend_existing = True
-
-)
-"""
-
-
-"""
-class Restaurant(Base):
-
-    __tablename__='restaurants'
-    id=Column(Integer(), primary_key=True)
-    name=Column(String())
-    price=Column(Float())
-
-    customer_review = relationship('Customer', backref = 'restaurant')
-    customer = relationship('Customer', secondary ='reviews', back_populates= 'restaurant')
-
-
-    def __repr__(self):
-        return f"Restaurant; {self.name}"
-    
-
-
-
-   
-
-class Customer(Base):
-    __tablename__='customers'
-    id=Column(Integer(), primary_key=True)
-    first_name = Column(String())
-    last_name = Column (String())
-
-    restaurant_id = Column(Integer(), ForeignKey('restaurants.id'))
-    customer_review = relationship ('Restaurants', secondary = 'reviews', back_populates= 'customer')
-
-
-class Review (Base):
-    __tablename__='reviews'
-    id=Column(Integer(), primary_key=True)
-    rating=Column(Float())
-    customer_id = Column(Integer(), ForeignKey('customers.id'))
-    restaurant_id = Column(Integer(), ForeignKey('restaurants.id'))
-"""
-"""class Restaurant(Base):
-    __tablename__ = 'restaurants'
-    id = Column(Integer(), primary_key=True)
-    name = Column(String())
-    price = Column(Float())
-
-    customer_review = relationship('Customer', back_populates='restaurant')
-
-
-class Customer(Base):
-    __tablename__ = 'customers'
-    id = Column(Integer(), primary_key=True)
-    first_name = Column(String())
-    last_name = Column(String())
-
-    restaurant_id = Column(Integer(), ForeignKey('restaurants.id'))
-    customer_review = relationship('Review', secondary='reviews', back_populates='customer')
-
-
-class Review(Base):
-    __tablename__ = 'reviews'
-    id = Column(Integer(), primary_key=True)
-    rating = Column(Float())
-    customer_id = Column(Integer())
-    restaurant_id = Column(Integer())"""
-
-"""class Restaurant(Base):
-    __tablename__ = 'restaurants'
-    id = Column(Integer(), primary_key=True)
-    name = Column(String())
-    price = Column(Float())
-
-    customer_review = relationship('Review', back_populates='restaurant')
-
-
-class Customer(Base):
-    __tablename__ = 'customers'
-    id = Column(Integer(), primary_key=True)
-    first_name = Column(String())
-    last_name = Column(String())
-
-    restaurant_id = Column(Integer(), ForeignKey('restaurants.id'))
-    customer_review = relationship('Review', secondary='reviews', back_populates='customer')
-
-    # Define the relationship with Review
-    reviews = relationship('Review', back_populates='customer')
-
-
-class Review(Base):
-    __tablename__ = 'reviews'
-    id = Column(Integer(), primary_key=True)
-    rating = Column(Float())
-
-    # Define the foreign key relationships
-    customer_id = Column(Integer(), ForeignKey('customers.id'))
-    restaurant_id = Column(Integer(), ForeignKey('restaurants.id'))
-
-    # Define the relationships with Customer and Restaurant
-    customer = relationship('Customer', back_populates='reviews')
-    restaurant = relationship('Restaurant', back_populates='customer_review')
-
-"""
 
 class Restaurant(Base):
     __tablename__ = 'restaurants'
@@ -123,6 +11,15 @@ class Restaurant(Base):
     price = Column(Float())
 
     customer_review = relationship('Review', back_populates='restaurant')
+
+
+    def reviews(self):
+        return session.query(Review).filter_by(restaurant_id=self.id).all()
+
+    def customers(self):
+        return session.query(Customer).join(Review).filter(Review.restaurant_id == self.id).distinct().all()
+
+
 
     def __repr__(self):
         return f"Restaurant; {self.name}"
@@ -137,7 +34,7 @@ class Customer(Base):
     restaurant_id = Column(Integer(), ForeignKey('restaurants.id'))
     customer_review = relationship('Review', primaryjoin='Customer.id == Review.customer_id', back_populates='customer')
 
-    # Define the relationship with Review
+  
     reviews = relationship('Review', back_populates='customer')
 
     def __repr__(self):
@@ -151,11 +48,11 @@ class Review(Base):
     id = Column(Integer(), primary_key=True)
     rating = Column(Float())
 
-    # Define the foreign key relationships
+
     customer_id = Column(Integer(), ForeignKey('customers.id'))
     restaurant_id = Column(Integer(), ForeignKey('restaurants.id'))
 
-    # Define the relationships with Customer and Restaurant
+    
     customer = relationship('Customer', back_populates='reviews')
     restaurant = relationship('Restaurant', back_populates='customer_review')
 
@@ -198,9 +95,25 @@ print(".........................................................................
 def reviews(self):
         return session.query(Review).filter_by(restaurant_id=self.id).all()
 
-print(reviews(1))
+print(reviews('1'))
 
-
-def customers(self):
+print("..................................................")
+"""def customers(self):
         return session.query(Customer).join(Review).filter(Review.restaurant_id == self.id).distinct().all()
-print(customers(2))
+print(customers('2'))
+
+restaurant_instance = session.query(Restaurant).get('restaurant_id')
+reviews_data = restaurant_instance.reviews()
+print(reviews_data)"""
+
+def reviews(restaurant_id):
+    # Assuming restaurant_id is an integer
+    restaurant_instance = session.query(Restaurant).get(restaurant_id)
+    if restaurant_instance:
+        return session.query(Review).filter_by(restaurant_id=restaurant_instance.restaurant_id).all()
+    else:
+        return None
+
+# Example usage:
+reviews_data = reviews(1)
+print(reviews_data)
